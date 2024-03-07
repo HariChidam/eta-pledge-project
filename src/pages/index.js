@@ -1,6 +1,8 @@
 import React from "react";
 import { useEffect } from "react";
 import supabase from "../../supabase.js";
+import Image from "next/image.js";
+import isaac from "../../public/isaac.jpeg"
 
 
 
@@ -19,8 +21,11 @@ export default function Home() {
   }, [])
 
   return (
-      <div className="pl-20 flex flex-row items-center text-center font-sans font-bold">
-          Hari is awesome
+      <div className="flex flex-col items-center text-center">
+          <h1 className="text-center font-sans font-bold text-6xl pt-20 pb-20">
+              Happy Birthday Isaac!!!!!
+          </h1>
+          <Image src={isaac} alt="Isaac" width={300} height={300} className="rounded-sm" />
       </div>
   );
 }
