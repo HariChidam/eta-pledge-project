@@ -22,21 +22,24 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '1200px', margin: 'auto' }}>
+
+
+    <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: 'auto' }}>
+      {/* Tabs on the left */}
+      <div style={{}}>
+          {tabs.map((tab, index) => (
+            <div key={index} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => setActiveTab(tab)}>
+              {tab} 
+            </div> 
+          ))}
+        </div>
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%', marginBottom: '20px' }}>
-        
+
+       
+
         {/* Title */}
         <h1 style={{ flex: '2', textAlign: 'center', fontSize: '24px' }}>Theta Tau x BeReal</h1>
       </div>
-      {/* Tabs on the left */}
-      <div style={{ flex: '1', height: '100%' }}>
-          {tabs.map((tab, index) => (
-            <div key={index} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => setActiveTab(tab)}>
-              {tab}
-            </div>
-          ))}
-        </div>
-
       {/* Photos in a 3x3 grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', width: '100%' }}>
         {Array.from({ length: 9 }).map((_, index) => (
