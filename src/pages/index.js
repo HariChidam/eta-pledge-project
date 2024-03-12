@@ -22,9 +22,7 @@ export default function Home() {
   }, []);
 
   return (
-
-
-    <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: 'auto', backgroundColor: '#FFFAE1'}}>
       {/* Tabs on the left */}
       <div style={{}}>
           {tabs.map((tab, index) => (
