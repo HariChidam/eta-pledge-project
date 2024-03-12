@@ -4,6 +4,7 @@ import isaac from "../../public/isaac.jpeg";
 // Assuming supabase is set up correctly
 import supabase from "../../supabase";
 
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Today");
   const tabs = ["Today", "Yesterday", "Two days ago", "Three days ago", "Four days ago", "Five days ago", "Six days ago"];
@@ -22,11 +23,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: 'auto', backgroundColor: '#FFFAE1'}}>
+    
+    <div style={{ display: 'flex', flexDirection: '', maxWidth: '1200px', margin: 'auto', backgroundColor: '#FFFAE1'}}>
       {/* Tabs on the left */}
       <div style={{}}>
           {tabs.map((tab, index) => (
-            <div key={index} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => setActiveTab(tab)}>
+            <div key={index} style={{ marginTop: '10px', cursor: 'pointer' }} onClick={() => setActiveTab(tab)}>
               {tab} 
             </div> 
           ))}
@@ -45,6 +47,7 @@ export default function Home() {
             <span style={{ marginBottom: '10px' }}>{`Submitter ${index + 1}`}</span>
             <Image src={isaac} alt={`Placeholder ${index + 1}`} width={150} height={150} objectFit="cover" />
           </div>
+        
         ))}
       </div>
     </div>
