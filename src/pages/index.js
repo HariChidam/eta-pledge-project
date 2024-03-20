@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import isaac from '../../public/isaac.jpeg'; // Verify this path is correct.
+import styles from '../../src/styles/index.module.css';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('Today');
@@ -12,14 +13,18 @@ export default function Home() {
     // Your data fetching logic here.
   }, []);
     return (
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', maxWidth: '1200px', margin: 'auto', backgroundColor: '#FFFAE1' }}>
-        <div style={{ minWidth: '150px', marginRight: '20px' }}>
+      <div className={styles.homeContainer}>
+        <div className={styles.tabsContainer}>
           {tabs.map((tab, index) => (
-            <div key={index} style={{ marginTop: '10px', cursor: 'pointer', color: 'black' }} onClick={() => setActiveTab(tab)}>
-              {tab}
-            </div>
-          ))}
+            <div
+              key={index}
+              className={styles.tab}
+              onClick={() => setActiveTab(tab)}
+            >
+          {tab}
         </div>
+        ))}
+      </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h1 style={{ fontSize: '24px', color: 'black', textAlign: 'center' }}>Theta Tau x BeReal</h1>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', width: '100%' }}>

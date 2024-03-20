@@ -1,0 +1,73 @@
+.homeContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #FFFAE1;
+  }
+  
+  .tabsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .tab {
+    margin-right: 10px;
+    cursor: pointer;
+    color: black;
+    padding: 10px;
+  }
+  
+  .tabContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .relative {
+    position: relative;
+  }
+  
+  .group {
+    cursor: pointer;
+  }
+  
+  .imageContainer {
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+  }
+  
+  .imageOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent overlay */
+  }
+  
+  .group:hover .imageOverlay {
+    opacity: 1;
+  }
+  
+  .imageText {
+    color: white;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+  }
