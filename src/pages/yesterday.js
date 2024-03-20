@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import photo from '../../public/isaac.jpeg'; // Verify this path is correct.
+import photo from '../../public/esben.jpeg'; // Verify this path is correct.
 import styles from '../../src/styles/index.module.css';
 import Link from 'next/link';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('Today');
+  const [activeTab, setActiveTab] = useState('Yesterday');
   const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Three days ago': '/three-days-ago', 'Four days ago': '/four-days-ago', 'Five days ago': '/five-days-ago', 'Six days ago': '/six-days-ago'};
   const names = ['Hari', 'Kate', 'Cate' , 'Eddie' , 'Esben' , 'Isaac', 'Ella', 'George', 'Diego']; //need to figure out how to populate these arrays with data from supabase
   const dates = ['Date 1','Date 2','Date 3','Date 4','Date 5','Date 6','Date 7','Date 8','Date 9']; 

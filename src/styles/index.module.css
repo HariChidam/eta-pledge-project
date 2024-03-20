@@ -71,3 +71,50 @@
     font-size: 1rem;
     font-weight: bold;
   }
+
+  .title {
+    font-size: 24px;
+    color: black;
+    text-align: center;
+  }
+  
+  .gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .relative {
+    position: relative;
+  }
+  
+  .overflowHidden {
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* This maintains the aspect ratio of the containers */
+  }
+  
+  .imageOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 300ms;
+    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent overlay */
+  }
+  
+  .group:hover .imageOverlay {
+    opacity: 1;
+  }
+  
+  .imageText {
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+  }
