@@ -3,6 +3,8 @@ import Image from 'next/image';
 import photo from '../../public/isaac.jpeg'; // Verify this path is correct.
 import styles from '../../src/styles/index.module.css';
 import Link from 'next/link';
+import { supabase } from '../../supabase.js';
+
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('Today');
@@ -12,6 +14,24 @@ export default function Home() {
   //we could fill an array with all of the images for a particular date, and then decide which array to use based on the current useState
   useEffect(() => {
     // Your data fetching logic here.
+    const fetchPledges = async () => {
+
+        const { data, error } = await supabase.from('test').select()
+  
+        if (error) {
+          throw error;
+        }
+  
+        if (data) {
+          console.log(data)
+        }
+      // } catch (error) {
+      //   console.error('Error fetching pledges:', error);
+      // }
+    };
+
+    fetchPledges();
+
   }, []);
     return (
       <div className={styles.homeContainer}>
