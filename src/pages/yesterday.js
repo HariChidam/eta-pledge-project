@@ -6,12 +6,16 @@ import Link from 'next/link';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('Yesterday');
-  const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Later': '/later'};
+  const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Later': '/later', 'Upload': '/upload'};
   const names = ['Hari', 'Kate', 'Cate' , 'Eddie' , 'Esben' , 'Isaac', 'Ella', 'George', 'Diego']; //need to figure out how to populate these arrays with data from supabase
   const dates = ['Date 1','Date 2','Date 3','Date 4','Date 5','Date 6','Date 7','Date 8','Date 9']; 
   //we could fill an array with all of the images for a particular date, and then decide which array to use based on the current useState
   useEffect(() => {
-    // Your data fetching logic here.
+   // const loadImages = async () => {
+   //   const images = await fetchImagesForDay('yesterday'); 
+   //   setImages(images);
+   // };
+   // loadImages();
   }, []);
     return (
       <div className={styles.homeContainer}>

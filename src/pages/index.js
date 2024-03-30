@@ -9,40 +9,48 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Home() {
+ 
+  
+
+  const handleFileSelection = (event) => {
+    const fileName = event.target.files[0] ? event.target.files[0].name : "No file chosen";
+    document.getElementById('file-chosen').textContent = fileName;
+  };
+  
   const [activeTab, setActiveTab] = useState('Today');
 
-  const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Later': '/later'};
+  const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Later': '/later', 'Upload': '/upload'};
   const names = ['Hari', 'Kate', 'Cate' , 'Eddie' , 'Esben' , 'Isaac', 'Ella', 'George', 'Diego']; //need to figure out how to populate these arrays with data from supabase
   const dates = ['Date 1','Date 2','Date 3','Date 4','Date 5','Date 6','Date 7','Date 8','Date 9']; 
   //we could fill an array with all of the images for a particular date, and then decide which array to use based on the current useState
 
   const [image, setImage] = useState(null); //this will be an array of the images for the current date
 
-    const uploadPicture = async () => {
-
-
-        // convert to the right file type
-
-        // generate a unique id for the file
-
-        // upload the file to supabase (uuid, 0, name)
-
-        // const hari = uuidv4();
-        // console.log(hari);
-
-        // const { data, error } = await supabase.from('photos').select()
-
-        // if (error) {
-        //   throw error;
-        // }
+  const uploadPicture = async (file, date) => {
+    const fileName = `${uuidv4()}.${file.name.split('.').pop()}`;
+    const filePath = `path/to/store/${fileName}`;
   
-        // if (data) {
-        //   console.log()
-        // }
-      // } catch (error) {
-      //   console.error('Error fetching pledges:', error);
-      // }
-    };
+    const { error: uploadError } = await supabase.storage.from('your-bucket').upload(filePath, file);
+  
+    if (uploadError) {
+      throw uploadError;
+    }
+  
+    const { publicURL, error: urlError } = supabase.storage.from('your-bucket').getPublicUrl(filePath);
+  
+    if (urlError) {
+      throw urlError;
+    }
+  
+    const { data, error } = await supabase.from('your-table').insert([{ name: fileName, url: publicURL, date: date }]);
+  
+    if (error) {
+      throw error;
+    }
+  
+    // Optionally update your state here to show the new image/date in your UI
+  };
+  
 
     useEffect(() => {
 

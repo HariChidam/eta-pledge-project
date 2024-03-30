@@ -1,6 +1,7 @@
 .homeContainer {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
     max-width: 1200px;
     margin: auto;
     background-color: #FFFAE1;
@@ -118,3 +119,43 @@
     font-weight: bold;
     text-align: center;
   }
+  
+  .customFileUpload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    color: black; /* Text color */
+}
+
+.file-upload-container {
+  display: grid;
+  place-items: center;
+  padding: 20px; /* Adds some space inside the container */
+}
+
+/* Add to your index.module.css */
+.centeredText {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 24px; /* Adjust size as needed */
+  color: #333; /* Adjust text color as needed */
+}
+
+/* Add to your index.module.css */
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* This centers the content vertically */
+  align-items: center; /* This centers the content horizontally */
+  height: 100vh; /* Make it as tall as the viewport */
+}
+
+
+#file-chosen {
+    margin-left: 10px;
+    color: black; /* Ensuring the text color is black */
+
+    
+}
