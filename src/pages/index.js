@@ -44,9 +44,9 @@ export default function Home() {
   
     const { data, error } = await supabase.from('your-table').insert([{ name: fileName, url: publicURL, date: date }]);
   
-    if (error) {
-      throw error;
-    }
+    //if (error) {
+      //throw error;
+    //}
   
     // Optionally update your state here to show the new image/date in your UI
   };

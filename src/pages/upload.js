@@ -57,8 +57,6 @@ export default function Home() {
             <div className={styles.centeredText}>Upload Page</div>
             <input type="file" onChange={handleFileSelection} style={{ margin: "400px 200px", display: 'block' }} />
 
-
-
             {/* Images grid */}
             <div className={styles.imagesContainer}>
                 {images.map((image, index) => (
