@@ -16,18 +16,18 @@ export default function Home() {
         'Later': '/later'
     };
 
-    useEffect(() => {
-        const fetchImages = async () => {
-            const { data, error } = await supabase.from('your-table').select('*');
-            if (error) {
-                console.error('Error fetching images:', error);
-            } else {
-                setImages(data);
-            }
-        };
+   // useEffect(() => {
+   //     const fetchImages = async () => {
+   //         const { data, error } = await supabase.from('your-table').select('*');
+   //         if (error) {
+   //             console.error('Error fetching images:', error);
+   //         } else {
+   //             setImages(data);
+   //         }
+   //     };
 
-        fetchImages();
-    }, []);
+   //     fetchImages();
+   // }, []);
 
     const handleFileSelection = async (event) => {
         if (event.target.files.length > 0) {
