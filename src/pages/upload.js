@@ -29,6 +29,54 @@ export default function Home() {
    //     fetchImages();
    // }, []);
 
+async function uploadPicture(file, date) {
+  // Generate a unique file name for the upload, to avoid overwriting existing files.
+  // This uses the UUID library to generate a unique identifier for each file.
+  const fileName = `${date}-${file.name}`;
+
+  try {
+    // Upload the file to the specified bucket in Supabase Storage.
+    // Replace 'your-bucket-name' with the actual name of your bucket.
+    const { data, error: uploadError } = await supabase.storage
+      .from('test')
+      .upload(`uploads/${fileName}`, file);
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    // After uploading, you can retrieve the public URL of the file.
+    // You might want to save this URL in your Supabase database along with other metadata.
+    const { publicURL, error: urlError } = supabase.storage
+      .from('test')
+      .getPublicUrl(`uploads/${fileName}`);
+
+    if (urlError) {
+      throw urlError;
+    }
+
+    // Optional: Insert file metadata into a Supabase table for easy access.
+    const { error: dbError } = await supabase
+      .from('photos')
+      .insert([{ name: fileName, url: publicURL, uploaded_at: date }]);
+
+    if (dbError) {
+      throw dbError;
+    }
+
+    console.log('File uploaded successfully:', publicURL);
+    return publicURL; // Return the public URL of the uploaded file.
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    return null; // Indicate failure.
+  }
+}
+
+
+
+
+
+   
     const handleFileSelection = async (event) => {
         if (event.target.files.length > 0) {
             const file = event.target.files[0];
