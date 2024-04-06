@@ -3,11 +3,12 @@ import Image from 'next/image';
 import styles from '../../src/styles/index.module.css';
 import Link from 'next/link';
 import supabase from '../../supabase.js';
+import { v4 as uuidv4 } from 'uuid';
 
-export default function Home() {
+export default function Upload() {
     const [activeTab, setActiveTab] = useState('Today');
-    const [images, setImages] = useState(['upload']);
-
+    const [image, setImages] = useState(['upload']);
+    const [imageURL, setImageURL] = useState(['null']);
     // Assuming these routes correspond to pages in your Next.js app
     const tabRoutes = {
         'Today': "/",
@@ -16,78 +17,55 @@ export default function Home() {
         'Later': '/later'
     };
 
-   // useEffect(() => {
-   //     const fetchImages = async () => {
-   //         const { data, error } = await supabase.from('your-table').select('*');
-   //         if (error) {
-   //             console.error('Error fetching images:', error);
-   //         } else {
-   //             setImages(data);
-   //         }
-   //     };
+async function uploadPicture() {
+    // Generate a unique file name for the upload, to avoid overwriting existing files.
+    // This uses the UUID library to generate a unique identifier for each file.
+    console.log(supabase);
+    const fileName = uuidv4();
+    console.log(fileName)
 
-   //     fetchImages();
-   // }, []);
+    try {
+      const { data, error: uploadError } = await supabase.storage
+        .from('test')
+        .upload(`${fileName}.jpeg`, image,
+        {
+          cacheControl: '3600',
+          contentType: 'image/jpeg',
+          upsert: true
+        }
+      );
 
-async function uploadPicture(file, date) {
-  // Generate a unique file name for the upload, to avoid overwriting existing files.
-  // This uses the UUID library to generate a unique identifier for each file.
-  const fileName = `${date}-${file.name}`;
+      if (uploadError) {
+        console.log(uploadError)
+        throw uploadError;
+      }
 
-  try {
-    // Upload the file to the specified bucket in Supabase Storage.
-    // Replace 'your-bucket-name' with the actual name of your bucket.
-    const { data, error: uploadError } = await supabase.storage
-      .from('test')
-      .upload(`uploads/${fileName}`, file);
+      const { error: insertError } = await supabase
+        .from('photos')
+        .insert({ uuid: fileName, days_since_uploaded: 0})
 
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    // After uploading, you can retrieve the public URL of the file.
-    // You might want to save this URL in your Supabase database along with other metadata.
-    const { publicURL, error: urlError } = supabase.storage
-      .from('test')
-      .getPublicUrl(`uploads/${fileName}`);
-
-    if (urlError) {
-      throw urlError;
-    }
-
-    // Optional: Insert file metadata into a Supabase table for easy access.
-    const { error: dbError } = await supabase
-      .from('photos')
-      .insert([{ name: fileName, url: publicURL, uploaded_at: date }]);
-
-    if (dbError) {
-      throw dbError;
-    }
-
-    console.log('File uploaded successfully:', publicURL);
-    return publicURL; // Return the public URL of the uploaded file.
   } catch (error) {
     console.error('Error uploading file:', error);
-    return null; // Indicate failure.
+    return null;
   }
 }
 
+  const handleFileSelection = async (event) => {
+      if (event.target.files.length > 0) {
+          const file = event.target.files[0];
 
 
-
-
-   
-    const handleFileSelection = async (event) => {
-        if (event.target.files.length > 0) {
-            const file = event.target.files[0];
-            // Implement your uploadPicture function as needed
-            // await uploadPicture(file, "2023-01-01");
-        }
-    };
-
+          if (file.type === "image/jpeg") {
+            const image = URL.createObjectURL(file);
+            setImages(file)
+            setImageURL(Image)
+          }
+      }
+  };
 
     return (
         <div className={styles.homeContainer}>
+          {/* Nav Bar */}
             <div className={styles.tabsContainer}>
                 {Object.entries(tabRoutes).map(([tabName, tabPath], index) => (
                     <Link key={index} href={tabPath} passHref>
@@ -100,30 +78,17 @@ async function uploadPicture(file, date) {
                     </Link>
                 ))}
             </div>
-
             {/* New Text Block */}
+
+
             <div className={styles.centeredText}>Upload Page</div>
             <input type="file" onChange={handleFileSelection} style={{ margin: "400px 200px", display: 'block' }} />
+  
+            <button className='font-bold text-md bg-[#8b000070] p-2 rounded-md text-center' onClick={uploadPicture}>
+                      Submit Picture
+            </button>
 
             {/* Images grid */}
-            <div className={styles.imagesContainer}>
-                {images.map((image, index) => (
-                    <div key={index} className={styles.relative}>
-                        <Image
-                            src={image.url}
-                            alt={`Image ${index + 1}`}
-                            layout="fill"
-                            objectFit="cover"
-                        />
-                    </div>
-                ))}
-            </div>
         </div>
     );
-
-
-
-
-
-
 }
