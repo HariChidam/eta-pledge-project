@@ -1,115 +1,179 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import photo from '../../public/isaac.jpeg'; // Verify this path is correct.
 import styles from '../../src/styles/index.module.css';
 import Link from 'next/link';
 import supabase from '../../supabase.js';
-import { v4 as uuidv4 } from 'uuid';
-
-
 
 export default function Home() {
- 
-  
-
-  const handleFileSelection = (event) => {
-    const fileName = event.target.files[0] ? event.target.files[0].name : "No file chosen";
-    document.getElementById('file-chosen').textContent = fileName;
-  };
-  
   const [activeTab, setActiveTab] = useState('Today');
-
-  const tabRoutes = {'Today': "/", 'Yesterday': '/yesterday', 'Two days ago': '/two-days-ago', 'Later': '/later', 'Upload': '/upload'};
-  const names = ['Hari', 'Kate', 'Cate' , 'Eddie' , 'Esben' , 'Isaac', 'Ella', 'George', 'Diego']; //need to figure out how to populate these arrays with data from supabase
-  const dates = ['Date 1','Date 2','Date 3','Date 4','Date 5','Date 6','Date 7','Date 8','Date 9']; 
-  //we could fill an array with all of the images for a particular date, and then decide which array to use based on the current useState
-
-  const [image, setImage] = useState(null); //this will be an array of the images for the current date
-
-  const uploadPicture = async (file, date) => {
-    const fileName = `${uuidv4()}.${file.name.split('.').pop()}`;
-    const filePath = `path/to/store/${fileName}`;
-  
-    const { error: uploadError } = await supabase.storage.from('your-bucket').upload(filePath, file);
-  
-    if (uploadError) {
-      throw uploadError;
-    }
-  
-    const { publicURL, error: urlError } = supabase.storage.from('your-bucket').getPublicUrl(filePath);
-  
-    if (urlError) {
-      throw urlError;
-    }
-  
-    const { data, error } = await supabase.from('your-table').insert([{ name: fileName, url: publicURL, date: date }]);
-  
-    //if (error) {
-      //throw error;
-    //}
-  
-    // Optionally update your state here to show the new image/date in your UI
+  const tabRoutes = {
+    'Today': "/",
+    'Yesterday': '/yesterday',
+    'Two days ago': '/two-days-ago',
+    'Three days ago': '/three-days-ago',
+    'Four days ago': '/four-days-ago',
+    'Five days ago': '/five-days-ago',
+    'Six days ago': '/six-days-ago',
+    'Upload': '/upload'
   };
-  
 
-    useEffect(() => {
+  const [photoIds, setPhotoIds] = useState([]);
+  const [photoData, setPhotoData] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [intervalPhotos, setIntervalPhotos] = useState([]);
 
-      // first go to table at get all uuid = some number of days
-      // thend downlaod those uuid from the storage
-      // then display them in the grid
+  useEffect(() => {
+    let intervalId;
 
-      // function handleDownload(){
-      //   const { data, error } = await supabase.from('photos').download()
+    const fetchAllPhotosLater = async () => {
+      setLoading(true); // Begin loading
+      try {
+        const { data, error } = await supabase
+          .from('photos')
+          .select('*')
+          .eq('days_since_uploaded', 0);
 
-      //   if (error) {
-      //     throw error;
-      //   }
-  
-      //   if (data) {
-      //     console.log()
-      //   }
+        if (error) {
+          throw error;
+        }
 
-      // }
+        if (data) {
+          // Process all downloads concurrently using Promise.all
+          const downloadPromises = data.map(photo => supabase
+            .storage
+            .from('test')
+            .download(`${photo.uuid}.jpeg`)
+          );
 
-    }, []);
+          const downloadResponses = await Promise.all(downloadPromises.map(p => p.catch(e => e)));
+          
+          const validData = downloadResponses.filter((response) => !(response instanceof Error));
 
+          // Assuming downloaded data includes URLs to the images
+          setPhotoData(validData.map(d => URL.createObjectURL(d.data)));
+        }
+      } catch (error) {
+        console.error('Error fetching photos:', error);
+      } finally {
+        setLoading(false); // End loading regardless of result
+      }
+    }; 
 
-    return (
-      <div className={styles.homeContainer}>
-        <div className={styles.tabsContainer}>
+    const updatePhotoDays = async () => {
+      try {
+        const { data: intervalData, error: intervalError } = await supabase
+          .from('photos')
+          .select('*')
+
+        if (intervalError) {
+          throw intervalError;
+        }
+
+        if (intervalData) {
+          
+         let oldData = intervalData.filter(photo => photo.days_since_uploaded > 6);
+         const deleteFilesFromStorage = oldData.map(photo =>
+            supabase
+              .storage
+              .from('test')
+              .remove(`${photo.uuid}.jpeg`) 
+          );
+
+          const deleteOldPhotos = oldData.map(photo =>
+            supabase
+              .from('photos')
+              .delete()
+              .eq('uuid', photo.uuid)
+          );
+
+          Promise.all(deleteOldPhotos)
+          .then((responses) => {
+            responses.forEach((response, index) => {
+              console.log(`Delete operation ${index} response:`, response);
+            });
+            console.log('All selected photos have been deleted or attempted to be deleted.');
+          })
+          .catch((error) => {
+            console.error('An error occurred during deletion', error);
+          });
+
+          Promise.all(deleteFilesFromStorage)
+          .then((storageResponses) => {
+            storageResponses.forEach((response, index) => {
+              console.log(`Storage deletion operation ${index} response:`, response);
+            });
+            console.log('All selected files from storage have been deleted or attempted to be deleted.');
+        })
+        .catch((error) => {
+            console.error('An error occurred during deletion', error);
+          });
+
+          // Execute all updates in parallel using Promise.all and map
+          let goodData = intervalData.filter(photo => photo.days_since_uploaded < 7);
+          const updatePromises = goodData.map(photo =>
+            supabase
+              .from('photos')
+              .update({ days_since_uploaded: photo.days_since_uploaded + 1 })
+              .eq('uuid', photo.uuid)
+          );
+
+          // Wait for all the updates to resolve
+          await Promise.all(updatePromises);
+        }
+
+      } catch (error) {
+        console.error('Error updating photo days:', error);
+      }
+    }
+
+    // Start the interval only after initial photos are loaded
+    fetchAllPhotosLater().then(() => {
+      intervalId = setInterval(updatePhotoDays, 100000000000000);
+    });
+
+    // Cleanup the interval when the component is unmounted
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
+
+  return (
+    <div className={styles.homeContainer}>
+      <div className={styles.tabsContainer}>
         {Object.entries(tabRoutes).map(([tabName, tabPath], index) => (
-        <Link key={index} href={tabPath} passHref>
+          <Link key={index} href={tabPath} passHref>
             <div
-                className={styles.tab}
-                onClick={() => setActiveTab(tabName)}
+              className={styles.tab}
+              onClick={() => setActiveTab(tabName)}
             >
-                {tabName}
+              {tabName}
             </div>
-        </Link>
-      ))}
-    </div>
+          </Link>
+        ))}
+      </div>
       <div className={styles.tabContent}>
         <h1 className={styles.title}>Theta Tau x BeReal</h1>
-        <div className={styles.gridContainer}>
-          {Array.from({ length: 9 }).map((_, index) => (
-            <div key={index} className={styles.relative}>
-              <div className={`${styles.overflowHidden} ${styles.group}`}>
-                <Image
-                  src={photo}
-                  alt={`Placeholder ${index + 1}`}
-                  layout="fill"
-                  objectFit="cover"
-                />
+        {isLoading ? (
+          <div>Loading photos...</div> // Replace with a visual loading spinner if desired
+        ) : (
+          <div className={styles.gridContainer}>
+            {photoData.map((photo, index) => (
+              <div key={index} className={styles.relative}>
+                <div className={`${styles.overflowHidden} ${styles.group}`}>
+                  <Image
+                    src={photo}
+                    alt={`Photo ${index + 1}`}
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
               </div>
-              <div className={`${styles.imageOverlay} ${styles.group}`}>
-                <span className={styles.imageText}>
-                  {names[index]}<br />{dates[index]}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
-    );
-  }
+  );
+}

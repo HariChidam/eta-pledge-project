@@ -5,12 +5,15 @@ import Link from 'next/link';
 import supabase from '../../supabase.js';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('Later');
+  const [activeTab, setActiveTab] = useState('Five days ago');
   const tabRoutes = {
     'Today': "/",
     'Yesterday': '/yesterday',
     'Two days ago': '/two-days-ago',
-    'Later': '/later',
+    'Three days ago': '/three-days-ago',
+    'Four days ago': '/four-days-ago',
+    'Five days ago': '/five-days-ago',
+    'Six days ago': '/six-days-ago',
     'Upload': '/upload'
   };
 
@@ -20,7 +23,6 @@ export default function Home() {
   const [intervalPhotos, setIntervalPhotos] = useState([]);
 
   useEffect(() => {
-    let intervalId;
 
     const fetchAllPhotosLater = async () => {
       setLoading(true); // Begin loading
@@ -28,7 +30,7 @@ export default function Home() {
         const { data, error } = await supabase
           .from('photos')
           .select('*')
-          .gte('days_since_uploaded', 3);
+          .eq('days_since_uploaded', 5);
 
         if (error) {
           throw error;
@@ -56,59 +58,10 @@ export default function Home() {
       }
     }; 
 
-    const updatePhotoDays = async () => {
-      try {
-        const { data: intervalData, error: intervalError } = await supabase
-          .from('photos')
-          .select('*')
-
-        if (intervalError) {
-          throw intervalError;
-        }
-
-        if (intervalData) {
-          
-         let oldData = intervalData.filter(photo => photo.days_since_uploaded >= 100);
-          const deleteOldPhotos = oldData.map(photo =>
-            supabase
-              .from('photos')
-              .delete()
-              .eq('uuid', photo.uuid)
-          );
-
-          // delete from storage too
-
-          // Execute all updates in parallel using Promise.all and map
-          let goodData = intervalData.filter(photo => photo.days_since_uploaded < 100);
-          const updatePromises = goodData.map(photo =>
-            supabase
-              .from('photos')
-              .update({ days_since_uploaded: photo.days_since_uploaded + 1 })
-              .eq('uuid', photo.uuid)
-          );
-
-          // Wait for all the updates to resolve
-          await Promise.all(updatePromises);
-        }
-
-      } catch (error) {
-        console.error('Error updating photo days:', error);
-      }
-    }
-
     // Start the interval only after initial photos are loaded
-    fetchAllPhotosLater().then(() => {
-      intervalId = setInterval(updatePhotoDays, 10);
-    });
+    fetchAllPhotosLater();
 
-    // Cleanup the interval when the component is unmounted
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
   }, []);
-
   return (
     <div className={styles.homeContainer}>
       <div className={styles.tabsContainer}>

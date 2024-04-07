@@ -5,7 +5,7 @@ import Link from 'next/link';
 import supabase from '../../supabase.js';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('Yesterday');
+  const [activeTab, setActiveTab] = useState('Six days ago');
   const tabRoutes = {
     'Today': "/",
     'Yesterday': '/yesterday',
@@ -20,6 +20,7 @@ export default function Home() {
   const [photoIds, setPhotoIds] = useState([]);
   const [photoData, setPhotoData] = useState([]);
   const [isLoading, setLoading] = useState(false);
+ 
 
   useEffect(() => {
 
@@ -29,7 +30,7 @@ export default function Home() {
         const { data, error } = await supabase
           .from('photos')
           .select('*')
-          .eq('days_since_uploaded', 1);
+          .eq('days_since_uploaded', 6);
 
         if (error) {
           throw error;

@@ -11,10 +11,14 @@ export default function Upload() {
     const [imageURL, setImageURL] = useState(['null']);
     // Assuming these routes correspond to pages in your Next.js app
     const tabRoutes = {
-        'Today': "/",
-        'Yesterday': '/yesterday',
-        'Two days ago': '/two-days-ago',
-        'Later': '/later'
+      'Today': "/",
+      'Yesterday': '/yesterday',
+      'Two days ago': '/two-days-ago',
+      'Three days ago': '/three-days-ago',
+      'Four days ago': '/four-days-ago',
+      'Five days ago': '/five-days-ago',
+      'Six days ago': '/six-days-ago',
+      'Upload': '/upload'
     };
 
 async function uploadPicture() {
