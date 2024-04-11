@@ -55,13 +55,13 @@ async function uploadPicture() {
 
       const { error: insertError } = await supabase
       .from('photos')
-      .insert([
-          { uuid: fileName, uploader_name: uploaderName, days_since_uploaded: 0} // Include the uploaderName in the insert operation
-      ]);
+      .insert(
+          { uuid: fileName, days_since_uploaded: 0, uploader_name: uploaderName }// Include the uploaderName in the insert operation
+      );
       
       if (insertError) {
         throw insertError;
-    }
+      }
 
 
     setMessage('Uploaded successfully!'); 
