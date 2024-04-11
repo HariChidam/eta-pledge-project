@@ -128,7 +128,7 @@ export default function Home() {
 
     // Start the interval only after initial photos are loaded
     fetchAllPhotosLater().then(() => {
-      intervalId = setInterval(updatePhotoDays, 10);
+      intervalId = setInterval(updatePhotoDays, 100000);
     });
 
     // Cleanup the interval when the component is unmounted
