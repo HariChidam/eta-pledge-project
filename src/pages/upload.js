@@ -9,7 +9,9 @@ export default function Upload() {
     const [activeTab, setActiveTab] = useState('Today');
     const [image, setImages] = useState(['upload']);
     const [imageURL, setImageURL] = useState(['null']);
-    // Assuming these routes correspond to pages in your Next.js app
+    const [uploaderName, setUploaderName] = useState('');
+    const [message, setMessage] = useState('');
+
     const tabRoutes = {
       'Today': "/",
       'Yesterday': '/yesterday',
@@ -27,6 +29,13 @@ async function uploadPicture() {
     console.log(supabase);
     const fileName = uuidv4();
     console.log(fileName)
+    setMessage('');
+
+      if (!fileName || !uploaderName) {
+          // Validate that we have file and name before submit
+          console.error('Please select an image and enter your name.');
+          return;
+      }
 
     try {
       const { data, error: uploadError } = await supabase.storage
@@ -45,11 +54,26 @@ async function uploadPicture() {
       }
 
       const { error: insertError } = await supabase
-        .from('photos')
-        .insert({ uuid: fileName, days_since_uploaded: 0})
+      .from('photos')
+      .insert([
+          { uuid: fileName, uploader_name: uploaderName, days_since_uploaded: 0} // Include the uploaderName in the insert operation
+      ]);
+      
+      if (insertError) {
+        throw insertError;
+    }
 
-  } catch (error) {
+
+    setMessage('Uploaded successfully!'); 
+    setTimeout(() => {
+      setMessage('');
+    }, 3000);
+    }
+     
+  catch (error) {
     console.error('Error uploading file:', error);
+    setMessage('Failed to upload image and name.');
+    
     return null;
   }
 }
@@ -67,6 +91,13 @@ async function uploadPicture() {
       }
   };
 
+  const handleNameChange = (event) => {
+    setUploaderName(event.target.value);
+};
+
+const messageChange = (event) => {
+  setMessage("");
+};
     return (
         <div className={styles.homeContainer}>
           {/* Nav Bar */}
@@ -83,14 +114,43 @@ async function uploadPicture() {
                 ))}
             </div>
             {/* New Text Block */}
+            <div>
+                <input 
+                    type="text" 
+                    placeholder="Enter your name" 
+                    value={uploaderName}
+                    onChange={handleNameChange} // Method to update the uploaderName state
+                    className="font-bold text-md bg-[#8b000070] p-2 rounded-md text-center" 
+                />
+            </div>
 
+            <div>
+                <input 
+                    type="file" 
+                    placeholder="Choose your photo" 
+                    onClick={handleFileSelection}
+                    className="font-bold text-md bg-[#8b000070] p-2 rounded-md text-center" 
+                />
+            </div>
 
-            <div className={styles.centeredText}>Upload Page</div>
-            <input type="file" onChange={handleFileSelection} style={{ margin: "400px 200px", display: 'block' }} />
-  
-            <button className='font-bold text-md bg-[#8b000070] p-2 rounded-md text-center' onClick={uploadPicture}>
-                      Submit Picture
-            </button>
+            <div>
+                <button 
+                    onClick={uploadPicture}
+                    onChange = {messageChange}
+                    className={"font-bold text-md bg-[#8b000070] p-2 rounded-md text-center"} // Use your styles
+                >
+                    Submit
+                </button>
+            </div>
+
+            <div className={styles.centeredText}>Upload Page
+            </div>
+            {message && (
+                <div className={"font-bold text-md bg-[#8b000070] p-2 rounded-md text-center" }> {/* You should create a new style for this */}
+                    {messageChange}
+                </div> 
+            )} 
+
 
             {/* Images grid */}
         </div>
