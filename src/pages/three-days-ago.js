@@ -76,7 +76,7 @@ export default function Home() {
         ))}
       </div>
       <div className={styles.tabContent}>
-        <h1 className={styles.title}>Theta Tau x BeReal</h1>
+        <h1 className={styles.title}>THETA TAKES</h1>
         {isLoading ? (
           <div>Loading photos...</div> // Replace with a visual loading spinner if desired
         ) : (
